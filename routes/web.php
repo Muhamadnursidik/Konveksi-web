@@ -30,10 +30,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => redirect('/login'));
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::get('/dashboard', function () {
     $role = auth::user()->role;
 
@@ -69,7 +65,7 @@ Route::middleware('auth')->group(function () {
     })->name('notif.readAll');
 });
 
-Route::middleware([])
+Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->group(function () {
         Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('admin.dashboard');

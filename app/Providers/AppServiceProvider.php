@@ -23,22 +23,26 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('*', function ($view) {
 
-            if (auth::check()) {
+            if (Auth::check()) {
 
-                $notifikasi = Notifikasi::where('user_id', auth::id())
+                $notifikasi = Notifikasi::where('user_id', Auth::id())
                     ->latest()
                     ->take(5)
                     ->get();
 
-                $unread = Notifikasi::where('user_id', auth::id())
+                $unread = Notifikasi::where('user_id', Auth::id())
                     ->where('is_read', false)
                     ->count();
 
-                $view->with([
-                    'notifikasi' => $notifikasi,
-                    'unread'     => $unread,
-                ]);
+            } else {
+                $notifikasi = collect();
+                $unread     = 0;
             }
+
+            $view->with([
+                'notifikasi' => $notifikasi,
+                'unread'     => $unread,
+            ]);
         });
     }
 }
