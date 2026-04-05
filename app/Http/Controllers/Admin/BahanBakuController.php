@@ -57,7 +57,8 @@ class BahanBakuController extends Controller
             'foto'        => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
-        $bahanBaku = BahanBaku::findOrFail($id)->update($request->all());
+        $bahanBaku = BahanBaku::findOrFail($id);
+        $bahanBaku->update($request->all());
 
         if ($request->hasFile('foto')) {
             $bahanBaku->foto = $request->file('foto')->store('bahan_baku', 'public');

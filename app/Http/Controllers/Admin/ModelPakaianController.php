@@ -64,7 +64,8 @@ class ModelPakaianController extends Controller
             'foto_model'      => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $modelPakaian = ModelPakaian::findOrFail($id)->update($request->all());
+        $modelPakaian = ModelPakaian::findOrFail($id);
+        $modelPakaian->update($request->all());
 
         if ($request->hasFile('foto_model')) {
             $modelPakaian->foto_model = $request->file('foto_model')->store('model_pakaian', 'public');
