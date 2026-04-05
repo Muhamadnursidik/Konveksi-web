@@ -15,7 +15,7 @@ class JobProduksiController extends Controller
     public function index()
     {
         $data = JobProduksi::where('status', '!=', 'selesai')->
-        with([
+            with([
             'modelPakaian',
             'bahanBaku',
             'pemotongan.pemotong',
@@ -257,23 +257,17 @@ class JobProduksiController extends Controller
 
     public function table()
     {
-        return view('admin.job-produksi.partials.table-body', [
-            'data' => JobProduksi::with([
+        $data = JobProduksi::where('status', '!=', 'selesai')
+            ->with([
                 'modelPakaian',
                 'bahanBaku',
                 'pemotongan.pemotong',
                 'penjahitan.penjahit',
                 'finishing.finishing',
-            ])->orderByRaw("
-                FIELD(status,
-                    'menunggu',
-                    'dipotong',
-                    'dijahit',
-                    'finishing',
-                    'selesai'
-                )")
-                ->orderBy('id', 'desc')
-                ->get(),
-        ]);
+            ])
+            ->latest('id')
+            ->get();
+
+        return view('admin.job-produksi.partials.table-body', compact('data'));
     }
 }

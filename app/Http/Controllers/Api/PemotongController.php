@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\NotifHelper;
@@ -16,7 +15,7 @@ class PemotongController extends Controller
     {
         $jobs = JobProduksi::with(['modelPakaian', 'bahanBaku'])
             ->where('status', 'menunggu')
-            ->whereDoesntHave('pemotongan') // ✅ sama dengan web
+            ->whereDoesntHave('pemotongan')
             ->orderBy('created_at', 'asc')
             ->get()
             ->map(fn($j) => [
@@ -39,14 +38,14 @@ class PemotongController extends Controller
         if ($job->status !== 'menunggu') {
             return response()->json([
                 'success' => false,
-                'message' => 'Job tidak bisa dipotong'
+                'message' => 'Job tidak bisa dipotong',
             ], 403);
         }
 
         if ($job->pemotongan) {
             return response()->json([
                 'success' => false,
-                'message' => 'Job ini sudah dipotong'
+                'message' => 'Job ini sudah dipotong',
             ], 400);
         }
 
@@ -63,7 +62,6 @@ class PemotongController extends Controller
             'foto_bukti'      => $path,
             'status'          => 'pending',
         ]);
-
 
         NotifHelper::admin(
             'Job Diperbarui',
@@ -91,13 +89,55 @@ class PemotongController extends Controller
                 'model_pakaian' => $p->jobProduksi->modelPakaian->nama_model ?? '-',
                 'bahan'         => $p->jobProduksi->bahanBaku->nama_bahan ?? '-',
                 'jumlah_target' => $p->jobProduksi->jumlah_target,
-                'status'        => $p->status,  // pending | dipotong
+                'status'        => $p->status, // pending | dipotong
                 'foto_bukti'    => $p->foto_bukti
-                                    ? asset('storage/' . $p->foto_bukti)
-                                    : null,
+                    ? url('storage-file/' . $p->foto_bukti)
+                    : null,
                 'tanggal'       => $p->created_at->format('d M Y'),
             ]);
 
         return response()->json(['data' => $riwayat]);
+    }
+
+    public function stats()
+    {
+        $pemotongId = Auth::id();
+
+        $jobAktif = JobProduksi::where('status', 'menunggu')
+            ->whereDoesntHave('pemotongan')
+            ->count();
+
+        $selesaiHariIni = Pemotongan::where('pemotong_id', $pemotongId)
+            ->whereDate('created_at', today())
+            ->count();
+
+        $totalTarget = Pemotongan::with('jobProduksi')
+            ->where('pemotong_id', $pemotongId)
+            ->get()
+            ->sum(fn($p) => $p->jobProduksi->jumlah_target ?? 0);
+
+        return response()->json([
+            'job_aktif'        => $jobAktif,
+            'selesai_hari_ini' => $selesaiHariIni,
+            'total_target'     => $totalTarget,
+        ]);
+    }
+
+    public function bahanBaku()
+    {
+        $bahan = \App\Models\BahanBaku::orderBy('nama_bahan')
+            ->get()
+            ->map(fn($b) => [
+                'id'     => $b->id,
+                'nama'   => $b->nama_bahan,
+                'warna'  => $b->warna,
+                'stok'   => $b->stok_meter,
+                'satuan' => 'meter',
+                'foto'   => $b->foto
+                    ? url('storage-file/' . $b->foto)
+                    : null,
+            ]);
+
+        return response()->json(['data' => $bahan]);
     }
 }

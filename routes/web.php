@@ -139,3 +139,19 @@ Route::middleware(['auth', 'role:finishing'])
     });
 
 require __DIR__ . '/auth.php';
+
+// Tambah di paling bawah
+Route::get('/storage-file/{path}', function (string $path) {
+    $path = urldecode($path);
+    $fullPath = storage_path('app/public/' . $path);
+
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
+
+    return response()->file($fullPath, [
+        'Access-Control-Allow-Origin'  => '*',
+        'Access-Control-Allow-Methods' => 'GET, OPTIONS',
+        'Access-Control-Allow-Headers' => '*',
+    ]);
+})->where('path', '.*');

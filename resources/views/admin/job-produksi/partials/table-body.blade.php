@@ -1,19 +1,15 @@
 <tbody>
     @foreach ($data as $item)
         <tr class="single-item">
-
             {{-- MODEL --}}
             <td>
                 <div class="fw-semibold">{{ $item->modelPakaian->nama_model }}
                 </div>
             </td>
-
             {{-- BAHAN --}}
             <td>{{ $item->bahanBaku->nama_bahan }}</td>
-
             {{-- TARGET --}}
             <td class="text-center fw-bold">{{ $item->jumlah_target }}</td>
-
             {{-- STATUS --}}
             <td>
                 @php
@@ -50,7 +46,6 @@
                     <span class="badge bg-soft-dark text-dark">-</span>
                 @endif
             </td>
-
 
             {{-- PEMOTONG --}}
             <td>{{ optional($item->pemotongan?->pemotong)->name ?? '-' }}</td>
@@ -141,4 +136,3 @@
         </tr>
     @endforeach
 </tbody>
-
