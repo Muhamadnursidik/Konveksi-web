@@ -67,8 +67,8 @@
                                                                 {{ $item->jobProduksi->modelPakaian->nama_model ?? '-' }}
                                                             </span>
                                                             <p class="fs-12 text-muted mt-1 mb-0">
-                                                                {{ $item->jobProduksi->modelPakaian->kategori }} |
-                                                                {{ $item->jobProduksi->modelPakaian->ukuran }}
+                                                                {{ $item->jobProduksi->modelPakaian->kategori ?? '-' }} |
+                                                                {{ $item->jobProduksi->modelPakaian->ukuran ?? '-' }}
                                                             </p>
                                                         </div>
                                                     </div>
