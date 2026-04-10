@@ -61,34 +61,12 @@
                                 required
                             >
                             <x-input-error :messages="$errors->get('password')" class="mt-1"/>
-                        </div>
-
-                        {{-- Remember + Forgot --}}
-                        <div class="d-flex align-items-center justify-content-between mb-4">
-                            <div class="form-check">
-                                <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    name="remember"
-                                    id="remember"
-                                >
-                                <label class="form-check-label" for="remember">
-                                    Remember me
-                                </label>
-                            </div>
-
-                            @if (Route::has('password.request'))
-                                <a href="{{ route('password.request') }}" class="fs-11 text-primary">
-                                    Forgot password?
-                                </a>
-                            @endif
-                        </div>
+                        </div><br>
 
                         <button type="submit" class="btn btn-lg btn-primary w-100">
                             Login
                         </button>
                     </form>
-
                 </div>
             </div>
         </div>
