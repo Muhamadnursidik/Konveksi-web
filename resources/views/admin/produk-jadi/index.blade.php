@@ -59,12 +59,12 @@
                                                 <td class="project-name-td">
                                                     <div class="hstack gap-4">
                                                         <div class="avatar-image border-0">
-                                                            <img src="{{ asset('storage/' . $item->jobProduksi->modelPakaian->foto_model) }}"
+                                                            <img src="{{ asset('storage/' . optional($item->jobProduksi?->modelPakaian)->foto_model) }}"
                                                                 class="img-fluid" alt="Model">
                                                         </div>
                                                         <div>
                                                             <span class="d-block fw-semibold">
-                                                                {{ $item->jobProduksi->modelPakaian->nama_model }}
+                                                                {{ $item->jobProduksi->modelPakaian->nama_model ?? '-' }}
                                                             </span>
                                                             <p class="fs-12 text-muted mt-1 mb-0">
                                                                 {{ $item->jobProduksi->modelPakaian->kategori }} |
