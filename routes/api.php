@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FinishingController;
 use App\Http\Controllers\Api\PemotongController;
 use App\Http\Controllers\Api\PenjahitController;
+use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -19,12 +20,12 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/user/photo/{filename}', function ($filename) {
     $path = storage_path('app/public/users/' . $filename);
 
-    if (!file_exists($path)) {
+    if (! file_exists($path)) {
         abort(404);
     }
 
     return response()->file($path, [
-        'Access-Control-Allow-Origin' => '*',
+        'Access-Control-Allow-Origin'  => '*',
         'Access-Control-Allow-Methods' => 'GET',
         'Access-Control-Allow-Headers' => '*',
     ]);
@@ -33,6 +34,8 @@ Route::get('/user/photo/{filename}', function ($filename) {
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/profile', [ProfileController::class, 'index']);
+    Route::post('/profile', [ProfileController::class, 'update']);
 
     // Pemotong
     Route::prefix('pemotong')->group(function () {
