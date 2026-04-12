@@ -14,7 +14,7 @@ class JobPotongController extends Controller
     {
         $jobs = JobProduksi::with('modelPakaian')
             ->where('status', 'menunggu')
-            ->whereDoesntHave('pemotongan') // belum pernah dipotong
+            ->whereDoesntHave('pemotongan')
             ->orderBy('created_at')
             ->get();
 

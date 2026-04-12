@@ -98,28 +98,54 @@
             <td class="text-end">
                 <div class="hstack gap-2 justify-content-end">
                     @if ($item->status === 'menunggu' && $item->pemotongan?->status === 'pending')
+                        {{-- ACC Potong --}}
                         <form action="{{ route('admin.job-produksi.acc-pemotongan', $item->id) }}" method="POST">
                             @csrf
-                            <button class="btn btn-success btn-sm">ACC
-                                Potong</button>
+                            <button class="btn btn-success btn-sm">ACC Potong</button>
                         </form>
+                        {{-- TOLAK Potong --}}
+                        <button class="btn btn-danger btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalTolak"
+                            data-action="{{ route('admin.job-produksi.tolak-pemotongan', $item->id) }}"
+                            data-label="Pemotongan Job #{{ $item->id }}">
+                            Tolak
+                        </button>
+
                     @elseif ($item->status === 'dipotong' && $item->penjahitan?->status === 'pending')
+                        {{-- ACC Jahit --}}
                         <form action="{{ route('admin.job-produksi.acc-penjahitan', $item->id) }}" method="POST">
                             @csrf
-                            <button class="btn btn-success btn-sm">ACC
-                                Jahit</button>
+                            <button class="btn btn-success btn-sm">ACC Jahit</button>
                         </form>
+                        {{-- TOLAK Jahit --}}
+                        <button class="btn btn-danger btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalTolak"
+                            data-action="{{ route('admin.job-produksi.tolak-penjahitan', $item->id) }}"
+                            data-label="Penjahitan Job #{{ $item->id }}">
+                            Tolak
+                        </button>
+
                     @elseif ($item->status === 'dijahit' && $item->finishing?->status === 'pending')
+                        {{-- ACC Finishing --}}
                         <form action="{{ route('admin.job-produksi.acc-finishing', $item->id) }}" method="POST">
                             @csrf
-                            <button class="btn btn-success btn-sm">ACC
-                                Finishing</button>
+                            <button class="btn btn-success btn-sm">ACC Finishing</button>
                         </form>
+                        {{-- TOLAK Finishing --}}
+                        <button class="btn btn-danger btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalTolak"
+                            data-action="{{ route('admin.job-produksi.tolak-finishing', $item->id) }}"
+                            data-label="Finishing Job #{{ $item->id }}">
+                            Tolak
+                        </button>
+
                     @elseif ($item->status === 'menunggu')
                         <a href="{{ route('admin.job-produksi.edit', $item->id) }}" class="avatar-text avatar-md">
                             <i class="feather-edit"></i>
                         </a>
-
                         <form action="{{ route('admin.job-produksi.destroy', $item->id) }}" method="POST"
                             class="d-inline form-delete">
                             @csrf
@@ -129,7 +155,15 @@
                             </button>
                         </form>
                     @else
-                        <span class="text-muted">-di proses-</span>
+                        @if ($item->status === 'menunggu')
+                            <span class="badge bg-soft-secondary text-secondary">Menunggu Pemotong</span>
+                        @elseif ($item->status === 'dipotong')
+                            <span class="badge bg-soft-warning text-warning">Sedang Dijahit</span>
+                        @elseif ($item->status === 'dijahit')
+                            <span class="badge bg-soft-info text-info">Sedang Finishing</span>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
                     @endif
                 </div>
             </td>

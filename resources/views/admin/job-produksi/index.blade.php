@@ -97,6 +97,31 @@
     </div>
 </div>
 
+{{-- MODAL TOLAK --}}
+<div class="modal fade" id="modalTolak" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalTolakLabel">Tolak Pekerjaan</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formTolak" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <p class="mb-2">Menolak: <strong id="tolakLabel"></strong></p>
+                    <label class="form-label">Alasan Penolakan <span class="text-danger">*</span></label>
+                    <textarea name="catatan_tolak" class="form-control" rows="3"
+                        placeholder="Tulis alasan penolakan..." required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">Tolak</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     const modalBukti = document.getElementById('modalBukti');
     modalBukti.addEventListener('show.bs.modal', function(event) {
@@ -127,6 +152,18 @@
             modalImg.src = imgSrc;
             modalTitle.textContent = title;
         }
+    });
+
+    // Isi action & label saat modal tolak dibuka
+    document.getElementById('modalTolak').addEventListener('show.bs.modal', function (event) {
+        const btn    = event.relatedTarget;
+        const action = btn.getAttribute('data-action');
+        const label  = btn.getAttribute('data-label');
+
+        document.getElementById('formTolak').action = action;
+        document.getElementById('tolakLabel').textContent = label;
+        // Reset textarea tiap kali buka
+        document.querySelector('#formTolak textarea[name="catatan_tolak"]').value = '';
     });
 </script>
 @include('layouts.admin.footer')

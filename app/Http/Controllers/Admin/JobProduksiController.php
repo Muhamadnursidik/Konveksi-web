@@ -26,6 +26,20 @@ class JobProduksiController extends Controller
         return view('admin.job-produksi.index', compact('data'));
     }
 
+    public function table()
+    {
+        $data = JobProduksi::where('status', '!=', 'selesai')
+            ->with([
+                'modelPakaian',
+                'bahanBaku',
+                'pemotongan.pemotong',
+                'penjahitan.penjahit',
+                'finishing.finishing',
+            ])->latest('id')->get();
+
+        return view('admin.job-produksi.partials.table-body', compact('data'));
+    }
+
     public function create()
     {
         return view('admin.job-produksi.create', [
@@ -255,19 +269,85 @@ class JobProduksiController extends Controller
         return back()->with('success', 'Finishing di-ACC, produk jadi dibuat');
     }
 
-    public function table()
+    // Tambahkan setelah accPemotongan()
+    public function tolakPemotongan(Request $request, JobProduksi $job)
     {
-        $data = JobProduksi::where('status', '!=', 'selesai')
-            ->with([
-                'modelPakaian',
-                'bahanBaku',
-                'pemotongan.pemotong',
-                'penjahitan.penjahit',
-                'finishing.finishing',
-            ])
-            ->latest('id')
-            ->get();
+        if (! $job->pemotongan || $job->pemotongan->status !== 'pending') {
+            return back()->with('error', 'Pemotongan belum siap atau sudah diproses');
+        }
 
-        return view('admin.job-produksi.partials.table-body', compact('data'));
+        $request->validate([
+            'catatan_tolak' => 'required|string|max:255',
+        ]);
+
+        // Simpan dulu sebelum didelete
+        $pemotongId = $job->pemotongan->pemotong_id;
+
+        DB::transaction(function () use ($job) {
+            $job->pemotongan->delete();
+            // job tetap 'menunggu', pemotong bisa submit ulang
+        });
+
+        NotifHelper::user(
+            $pemotongId,
+            'Pemotongan Ditolak',
+            'Pemotongan job ' . $job->modelPakaian->nama_model . ' ditolak. Alasan: ' . $request->catatan_tolak . '. Harap perbaiki dan submit ulang.'
+        );
+
+        return back()->with('success', 'Pemotongan ditolak, pemotong akan dinotifikasi');
+    }
+
+    public function tolakPenjahitan(Request $request, JobProduksi $job)
+    {
+        if (! $job->penjahitan || $job->penjahitan->status !== 'pending') {
+            return back()->with('error', 'Penjahitan belum siap atau sudah diproses');
+        }
+
+        $request->validate([
+            'catatan_tolak' => 'required|string|max:255',
+        ]);
+
+        // Simpan dulu sebelum didelete
+        $penjahitId = $job->penjahitan->penjahit_id;
+
+        DB::transaction(function () use ($job) {
+            $job->penjahitan->delete();
+            $job->update(['status' => 'dipotong']); // balik ke tahap sebelumnya
+        });
+
+        NotifHelper::user(
+            $penjahitId,
+            'Penjahitan Ditolak',
+            'Penjahitan job ' . $job->modelPakaian->nama_model . ' ditolak. Alasan: ' . $request->catatan_tolak . '. Harap perbaiki dan submit ulang.'
+        );
+
+        return back()->with('success', 'Penjahitan ditolak, penjahit akan dinotifikasi');
+    }
+
+    public function tolakFinishing(Request $request, JobProduksi $job)
+    {
+        if (! $job->finishing || $job->finishing->status !== 'pending') {
+            return back()->with('error', 'Finishing belum siap atau sudah diproses');
+        }
+
+        $request->validate([
+            'catatan_tolak' => 'required|string|max:255',
+        ]);
+
+        // Simpan dulu sebelum didelete
+        $finishingId = $job->finishing->finishing_id;
+
+        DB::transaction(function () use ($job) {
+            $job->finishing->delete();
+            $job->update(['status' => 'dijahit']); // balik ke tahap sebelumnya
+        });
+
+        NotifHelper::user(
+            $finishingId,
+            'Finishing Ditolak',
+            'Finishing job ' . $job->modelPakaian->nama_model . ' ditolak. Alasan: ' . $request->catatan_tolak . '. Harap perbaiki dan submit ulang.'
+        );
+
+        return back()->with('success', 'Finishing ditolak, tim finishing akan dinotifikasi');
     }
 }

@@ -81,6 +81,9 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('job-produksi/{job}/acc-pemotongan', [JobProduksiController::class, 'accPemotongan'])->name('admin.job-produksi.acc-pemotongan');
         Route::post('job-produksi/{job}/acc-penjahitan', [JobProduksiController::class, 'accPenjahitan'])->name('admin.job-produksi.acc-penjahitan');
         Route::post('job-produksi/{job}/acc-finishing', [JobProduksiController::class, 'accFinishing'])->name('admin.job-produksi.acc-finishing');
+        Route::post('job-produksi/{job}/tolak-pemotongan', [JobProduksiController::class, 'tolakPemotongan'])->name('admin.job-produksi.tolak-pemotongan');
+        Route::post('job-produksi/{job}/tolak-penjahitan', [JobProduksiController::class, 'tolakPenjahitan'])->name('admin.job-produksi.tolak-penjahitan');
+        Route::post('job-produksi/{job}/tolak-finishing', [JobProduksiController::class, 'tolakFinishing'])->name('admin.job-produksi.tolak-finishing');
 
         // Laporan
         Route::get('/Laporan/produksi', [LaporanController::class, 'produksi'])->name('laporan.produksi');
@@ -142,10 +145,10 @@ require __DIR__ . '/auth.php';
 
 // Tambah di paling bawah
 Route::get('/storage-file/{path}', function (string $path) {
-    $path = urldecode($path);
+    $path     = urldecode($path);
     $fullPath = storage_path('app/public/' . $path);
 
-    if (!file_exists($fullPath)) {
+    if (! file_exists($fullPath)) {
         abort(404);
     }
 
