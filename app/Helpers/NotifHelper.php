@@ -6,6 +6,15 @@ use App\Models\User;
 
 class NotifHelper
 {
+    public static function user($userId, $judul, $pesan)
+    {
+        Notifikasi::create([
+            'user_id' => $userId,
+            'judul'   => $judul,
+            'pesan'   => $pesan,
+        ]);
+    }
+
     public static function admin($judul, $pesan)
     {
         $admins = User::where('role', 'admin')->get();

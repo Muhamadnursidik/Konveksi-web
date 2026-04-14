@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FinishingController;
+use App\Http\Controllers\Api\NotifikasiController;
 use App\Http\Controllers\Api\PemotongController;
 use App\Http\Controllers\Api\PenjahitController;
 use App\Http\Controllers\Api\ProfileController;
@@ -36,6 +37,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/profile', [ProfileController::class, 'index']);
     Route::post('/profile', [ProfileController::class, 'update']);
+
+    Route::prefix('notifikasi')->group(function () {
+        Route::get('/', [NotifikasiController::class, 'index']);
+        Route::post('/{id}/read', [NotifikasiController::class, 'read']);
+        Route::post('/read-all', [NotifikasiController::class, 'readAll']);
+    });
 
     // Pemotong
     Route::prefix('pemotong')->group(function () {
