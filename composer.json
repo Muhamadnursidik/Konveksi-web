@@ -12,6 +12,7 @@
         "php": "^8.4",
         "ext-gd": "*",
         "ext-mbstring": "*",
+        "ext-zip": "*",
         "barryvdh/laravel-dompdf": "^3.1",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
